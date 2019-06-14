@@ -338,9 +338,10 @@ module.exports = function create(options, optionalLogger) {
 	  }
 	  return result;
 	};
-  if (validationError(source, options, configFile, policyFiles)) {
-    return Promise.reject(validationError(source, options, configFile, policyFiles));
-  }
+
+  checkForValidationErrors(source, options, configFile, policyFiles);
+  if (validationErrorsExist()) return Promise.reject(errorMessage);
+
   return initEnvVarsFromOptions(options)
     .then(opts => customEnvVars = opts)
     .then(getPackageInfo)
