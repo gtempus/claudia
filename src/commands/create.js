@@ -125,6 +125,7 @@ module.exports = function create(options, optionalLogger) {
 	  return files.filter(fsUtil.isFile);
 	},
 	validationError = function () {
+          return top_validationError(source, options, configFile, policyFiles);
 	  if (source === os.tmpdir()) {
 	    return 'Source directory is the Node temp directory. Cowardly refusing to fill up disk with recursive copy.';
 	  }
