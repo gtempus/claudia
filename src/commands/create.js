@@ -95,6 +95,16 @@ const validationError = function (source, options, configFile, policyFiles) {
   }
 };
 
+let errorMessage;
+
+const checkForValidationErrors = function (source, options, configFile, policyFiles) {
+  errorMessage = validationError(source, options, configFile, policyFiles);
+};
+
+const validationErrorsExist = function() {
+  return !!errorMessage;
+};
+
 module.exports = function create(options, optionalLogger) {
   'use strict';
   let roleMetadata,
