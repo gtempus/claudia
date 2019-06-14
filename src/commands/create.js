@@ -24,6 +24,77 @@ const path = require('path'),
       lambdaCode = require('../tasks/lambda-code'),
       initEnvVarsFromOptions = require('../util/init-env-vars-from-options'),
       NullLogger = require('../util/null-logger');
+
+const top_validationError = function () {
+  if (source === os.tmpdir()) {
+    return 'Source directory is the Node temp directory. Cowardly refusing to fill up disk with recursive copy.';
+  }
+  if (!options.region) {
+    return 'AWS region is missing. please specify with --region';
+  }
+  if (options['optional-dependencies'] === false && options['use-local-dependencies']) {
+    return 'incompatible arguments --use-local-dependencies and --no-optional-dependencies';
+  }
+  if (!options.handler && !options['api-module']) {
+    return 'Lambda handler is missing. please specify with --handler';
+  }
+  if (options.handler && options['api-module']) {
+    return 'incompatible arguments: cannot specify handler and api-module at the same time.';
+  }
+  if (!options.handler && options['deploy-proxy-api']) {
+    return 'deploy-proxy-api requires a handler. please specify with --handler';
+  }
+  if (!options['security-group-ids'] && options['subnet-ids']) {
+    return 'VPC access requires at least one security group id *and* one subnet id';
+  }
+  if (options['security-group-ids'] && !options['subnet-ids']) {
+    return 'VPC access requires at least one security group id *and* one subnet id';
+  }
+  if (options.handler && options.handler.indexOf('.') < 0) {
+    return 'Lambda handler function not specified. Please specify with --handler module.function';
+  }
+  if (options['api-module'] && options['api-module'].indexOf('.') >= 0) {
+    return 'API module must be a module name, without the file extension or function name';
+  }
+  if (!fsUtil.isDir(path.dirname(configFile))) {
+    return 'cannot write to ' + configFile;
+  }
+  if (fsUtil.fileExists(configFile)) {
+    if (options && options.config) {
+      return options.config + ' already exists';
+    }
+    return 'claudia.json already exists in the source folder';
+  }
+  if (!fsUtil.fileExists(path.join(source, 'package.json'))) {
+    return 'package.json does not exist in the source folder';
+  }
+  if (options.policies && !policyFiles().length) {
+    return 'no files match additional policies (' + options.policies + ')';
+  }
+  if (options.memory || options.memory === 0) {
+    if (options.memory < limits.LAMBDA.MEMORY.MIN) {
+      return `the memory value provided must be greater than or equal to ${limits.LAMBDA.MEMORY.MIN}`;
+    }
+    if (options.memory > limits.LAMBDA.MEMORY.MAX) {
+      return `the memory value provided must be less than or equal to ${limits.LAMBDA.MEMORY.MAX}`;
+    }
+    if (options.memory % 64 !== 0) {
+      return 'the memory value provided must be a multiple of 64';
+    }
+  }
+  if (options.timeout || options.timeout === 0) {
+    if (options.timeout < 1) {
+      return 'the timeout value provided must be greater than or equal to 1';
+    }
+    if (options.timeout > 900) {
+      return 'the timeout value provided must be less than or equal to 900';
+    }
+  }
+  if (options['allow-recursion'] && options.role && isRoleArn(options.role)) {
+    return 'incompatible arguments allow-recursion and role. When specifying a role ARN, Claudia does not patch IAM policies.';
+  }
+};
+
 module.exports = function create(options, optionalLogger) {
   'use strict';
   let roleMetadata,
