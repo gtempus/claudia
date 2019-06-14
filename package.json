@@ -38,7 +38,7 @@
   "scripts": {
     "prepublishOnly": "npm shrinkwrap && node src/util/doc-md.js",
     "pretest": "eslint .",
-    "test": "node spec/support/jasmine-runner.js",
+    "test": "nyc node spec/support/jasmine-runner.js",
     "debug": "node --debug-brk --inspect spec/support/jasmine-runner.js",
     "integration-build": "aws codebuild start-build --project-name claudiajs --region us-west-2 --profile claudia-test",
     "integration-results": "aws s3 cp s3://claudiatestresults/claudiajs6/buildresult.txt . --profile claudia-test",
@@ -74,7 +74,8 @@
     "eslint-config-crockford": "^0.2.0",
     "eslint-config-defaults": "^9.0.0",
     "jasmine": "^2.5.2",
-    "jasmine-spec-reporter": "^2.7.0"
+    "jasmine-spec-reporter": "^2.7.0",
+    "nyc": "^14.1.1"
   },
   "engines": {
     "node": ">=6.10.0"
