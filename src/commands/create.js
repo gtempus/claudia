@@ -124,9 +124,6 @@ module.exports = function create(options, optionalLogger) {
 	  }
 	  return files.filter(fsUtil.isFile);
 	},
-	validationError = function () {
-          return top_validationError(source, options, configFile, policyFiles);
-	},
 	getPackageInfo = function () {
 	  logger.logStage('loading package config');
 	  return readjson(path.join(source, 'package.json'))
