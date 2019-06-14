@@ -25,7 +25,7 @@ const path = require('path'),
       initEnvVarsFromOptions = require('../util/init-env-vars-from-options'),
       NullLogger = require('../util/null-logger');
 
-const top_validationError = function () {
+const top_validationError = function (source, options, configFile, policyFiles) {
   if (source === os.tmpdir()) {
     return 'Source directory is the Node temp directory. Cowardly refusing to fill up disk with recursive copy.';
   }
