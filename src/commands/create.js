@@ -23,7 +23,8 @@ const path = require('path'),
       isRoleArn = require('../util/is-role-arn'),
       lambdaCode = require('../tasks/lambda-code'),
       initEnvVarsFromOptions = require('../util/init-env-vars-from-options'),
-      NullLogger = require('../util/null-logger');
+      NullLogger = require('../util/null-logger'),
+      OptionsValidatorExt = require('./options-validator');
 
 class OptionsValidator {
   constructor(source, options, configFile, policyFiles) {
@@ -347,8 +348,8 @@ module.exports = function create(options, optionalLogger) {
 	  return result;
 	};
 
-  const validator = new OptionsValidator(source, options, configFile, policyFiles);
-  validator.checkForValidationErrors(source, options, configFile, policyFiles);
+  const validator = new OptionsValidatorExt(source, options, configFile, policyFiles);
+  validator.checkForValidationErrors();
   if (validator.validationErrorsExist()) return Promise.reject(validator.errorMessage);
 
   return initEnvVarsFromOptions(options)
