@@ -331,8 +331,8 @@ module.exports = function create(options, optionalLogger) {
 	  }
 	  return result;
 	};
-  if (validationError()) {
-    return Promise.reject(validationError());
+  if (top_validationError(source, options, configFile, policyFiles)) {
+    return Promise.reject(top_validationError(source, options, configFile, policyFiles));
   }
   return initEnvVarsFromOptions(options)
     .then(opts => customEnvVars = opts)
