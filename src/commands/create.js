@@ -105,6 +105,24 @@ const validationErrorsExist = function() {
   return !!errorMessage;
 };
 
+class OptionsValidator {
+  constructor(source, options, configFile, policyFiles) {
+    this.source = source;
+    this.options = options;
+    this.configFile = configFile;
+    this.policyFiles = policyFiles;
+    this.errorMessage = null;
+  }
+
+  checkForValidationErrors(source, options, configFile, policyFiles) {
+    this.errorMessage = validationError(source, options, configFile, policyFiles);
+  };
+
+  validationErrorsExist() {
+    return !!this.errorMessage;
+  };
+}
+
 module.exports = function create(options, optionalLogger) {
   'use strict';
   let roleMetadata,
