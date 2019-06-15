@@ -29,6 +29,14 @@ class OptionsValidator {
     return fsUtil.isDir(path.dirname(this.configFile));
   }
 
+  minLambdaMemory() {
+    return limits.LAMBDA.MEMORY.MIN;
+  }
+
+  maxLambdaMemory() {
+    return limits.LAMBDA.MEMORY.MAX;
+  }
+
   validationError() {
     if (this.badSourceDirectory()) {
       return 'Source directory is the Node temp directory. Cowardly refusing to fill up disk with recursive copy.';
@@ -76,11 +84,11 @@ class OptionsValidator {
       return 'no files match additional policies (' + this.options.policies + ')';
     }
     if (this.options.memory || this.options.memory === 0) {
-      if (this.options.memory < limits.LAMBDA.MEMORY.MIN) {
-        return `the memory value provided must be greater than or equal to ${limits.LAMBDA.MEMORY.MIN}`;
+      if (this.options.memory < this.minLambdaMemory()) {
+        return `the memory value provided must be greater than or equal to ${this.minLambdaMemory()}`;
       }
-      if (this.options.memory > limits.LAMBDA.MEMORY.MAX) {
-        return `the memory value provided must be less than or equal to ${limits.LAMBDA.MEMORY.MAX}`;
+      if (this.options.memory > this.maxLambdaMemory()) {
+        return `the memory value provided must be less than or equal to ${this.maxLambdaMemory()}`;
       }
       if (this.options.memory % 64 !== 0) {
         return 'the memory value provided must be a multiple of 64';
