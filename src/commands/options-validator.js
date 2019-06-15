@@ -17,6 +17,18 @@ class OptionsValidator {
     return this.source === os.tmpdir();
   }
 
+  sourceDirectoryListsDependencies() {
+    return fsUtil.fileExists(path.join(this.source, 'package.json'));
+  }
+
+  configFileExists() {
+    return fsUtil.fileExists(this.configFile);
+  }
+
+  configFileIsWritable() {
+    return fsUtil.isDir(path.dirname(this.configFile));
+  }
+
   validationError() {
     if (this.badSourceDirectory()) {
       return 'Source directory is the Node temp directory. Cowardly refusing to fill up disk with recursive copy.';
@@ -48,16 +60,16 @@ class OptionsValidator {
     if (this.options['api-module'] && this.options['api-module'].indexOf('.') >= 0) {
       return 'API module must be a module name, without the file extension or function name';
     }
-    if (!fsUtil.isDir(path.dirname(this.configFile))) {
+    if (!this.configFileIsWritable()) {
       return 'cannot write to ' + this.configFile;
     }
-    if (fsUtil.fileExists(this.configFile)) {
+    if (this.configFileExists()) {
       if (this.options && this.options.config) {
         return this.options.config + ' already exists';
       }
       return 'claudia.json already exists in the source folder';
     }
-    if (!fsUtil.fileExists(path.join(this.source, 'package.json'))) {
+    if (!this.sourceDirectoryListsDependencies()) {
       return 'package.json does not exist in the source folder';
     }
     if (this.options.policies && !this.policyFiles().length) {
