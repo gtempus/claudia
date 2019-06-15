@@ -1,5 +1,4 @@
 const path = require('path'),
-      limits = require('../util/limits.json'),
       fsUtil = require('../util/fs-util'),
       aws = require('aws-sdk'),
       zipdir = require('../tasks/zipdir'),
