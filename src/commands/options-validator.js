@@ -13,8 +13,12 @@ class OptionsValidator {
     this.errorMessage = null;
   }
 
+  badSourceDirectory() {
+    return this.source === os.tmpdir();
+  }
+
   validationError() {
-    if (this.source === os.tmpdir()) {
+    if (this.badSourceDirectory()) {
       return 'Source directory is the Node temp directory. Cowardly refusing to fill up disk with recursive copy.';
     }
     if (!this.options.region) {
