@@ -1,17 +1,17 @@
-const path = require('path');
-const fsUtil = require('../util/fs-util');
+const SourceFilesystemConstraints = require('./source-filesystem-constraints');
+const ConfigFilesystemConstraints = require('./config-filesystem-constraints');
 
 const limits = require('../util/limits.json'); // A file! We need to break this one.
 
 const isRoleArn = require('../util/is-role-arn'); // no side-effects. Will not need to break this dependency.
-const SourceFilesystemConstraints = require('./source-filesystem-constraints');
 
 class OptionsValidator {
   constructor(source, options, configFile, policyFiles,
-              sourceConstraints = new SourceFilesystemConstraints(source)) {
+              sourceConstraints = new SourceFilesystemConstraints(source),
+              configFileConstraints = new ConfigFilesystemConstraints(configFile)) {
     this.sourceConstraints = sourceConstraints;
+    this.configFileConstraints = configFileConstraints;
     this.options = options;
-    this.configFile = configFile;
     this.policyFiles = policyFiles;
     this.errorMessage = null;
   }
@@ -25,11 +25,11 @@ class OptionsValidator {
   }
 
   configFileExists() {
-    return fsUtil.fileExists(this.configFile);
+    return this.configFileConstraints.configExists();
   }
 
   configFileIsWritable() {
-    return fsUtil.isDir(path.dirname(this.configFile));
+    return this.configFileConstraints.configIsWritable();
   }
 
   minLambdaMemory() {
