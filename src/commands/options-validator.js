@@ -1,8 +1,10 @@
-const os = require('os');
+ const os = require('os'); // lots of side effects here
 const path = require('path');
 const fsUtil = require('../util/fs-util');
-const limits = require('../util/limits.json');
-const isRoleArn = require('../util/is-role-arn');
+
+const limits = require('../util/limits.json'); // A file! We need to break this one.
+
+const isRoleArn = require('../util/is-role-arn'); // no side-effects. Will not need to break this dependency.
 
 class OptionsValidator {
   constructor(source, options, configFile, policyFiles) {
