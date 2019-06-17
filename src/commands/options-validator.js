@@ -1,14 +1,15 @@
- const os = require('os'); // lots of side effects here
 const path = require('path');
 const fsUtil = require('../util/fs-util');
 
 const limits = require('../util/limits.json'); // A file! We need to break this one.
 
 const isRoleArn = require('../util/is-role-arn'); // no side-effects. Will not need to break this dependency.
+const SourceFilesystemConstraints = require('./source-filesystem-constraints');
 
 class OptionsValidator {
-  constructor(source, options, configFile, policyFiles) {
-    this.source = source;
+  constructor(source, options, configFile, policyFiles,
+              sourceConstraints = new SourceFilesystemConstraints(source)) {
+    this.sourceConstraints = sourceConstraints;
     this.options = options;
     this.configFile = configFile;
     this.policyFiles = policyFiles;
@@ -16,11 +17,11 @@ class OptionsValidator {
   }
 
   badSourceDirectory() {
-    return this.source === os.tmpdir();
+    return this.sourceConstraints.isForbiddenLocation();
   }
 
   sourceDirectoryListsDependencies() {
-    return fsUtil.fileExists(path.join(this.source, 'package.json'));
+    return this.sourceConstraints.listsDependencies();
   }
 
   configFileExists() {
