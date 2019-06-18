@@ -82,7 +82,7 @@ class OptionsValidator {
     if (!this.sourceDirectoryListsDependencies()) {
       return 'package.json does not exist in the source folder';
     }
-    if (this.options.policies && !this.policyFiles().length) {
+    if (this.options.policies && !this.policyFiles.length) {
       return 'no files match additional policies (' + this.options.policies + ')';
     }
     if (this.options.memory || this.options.memory === 0) {

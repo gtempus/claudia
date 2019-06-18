@@ -48,12 +48,13 @@ module.exports = function create(options, optionalLogger) {
 	  () => logger.logStage('rate-limited by AWS, waiting before retry')
 	),
 	policyFiles = function () {
-	  let files = fsUtil.recursiveList(options.policies);
-	  if (fsUtil.isDir(options.policies)) {
-	    files = files.map(filePath => path.join(options.policies, filePath));
-	  }
-	  return files.filter(fsUtil.isFile);
-	},
+          if (!options.policies) return [];
+          let files = fsUtil.recursiveList(options.policies);
+          if (fsUtil.isDir(options.policies)) {
+            files = files.map(filePath => path.join(options.policies, filePath));
+          }
+          return files.filter(fsUtil.isFile);
+        },
 	getPackageInfo = function () {
 	  logger.logStage('loading package config');
 	  return readjson(path.join(source, 'package.json'))
@@ -259,7 +260,7 @@ module.exports = function create(options, optionalLogger) {
 	  return result;
 	};
 
-  const validator = new OptionsValidator(source, options, configFile, policyFiles);
+  const validator = new OptionsValidator(source, options, configFile, policyFiles());
   validator.checkForValidationErrors();
   if (validator.validationErrorsExist()) return Promise.reject(validator.errorMessage);
 
