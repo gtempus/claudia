@@ -72,7 +72,7 @@ class OptionsValidator {
       return 'API module must be a module name, without the file extension or function name';
     }
     if (!this.configFileIsWritable()) {
-      return 'cannot write to ' + this.configFile;
+      return 'cannot write to ' + this.configFileConstraints.theConfigFile();
     }
     if (this.configFileExists()) {
       if (this.options && this.options.config) {

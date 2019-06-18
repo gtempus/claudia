@@ -13,6 +13,10 @@ class ConfigFilesystemConstraints {
   configIsWritable() {
     return fsUtil.isDir(path.dirname(this.configFile));
   }
+
+  theConfigFile() {
+    return this.configFile;
+  }
 }
 
 module.exports = ConfigFilesystemConstraints;
