@@ -1,14 +1,13 @@
 const SourceFilesystemConstraints = require('./source-filesystem-constraints');
 const ConfigFilesystemConstraints = require('./config-filesystem-constraints');
-
-const limits = require('../util/limits.json'); // A file! We need to break this one.
-
+const Limits = require('./limits');
 const isRoleArn = require('../util/is-role-arn'); // no side-effects. Will not need to break this dependency.
 
 class OptionsValidator {
   constructor(source, options, configFile, policyFiles,
               sourceConstraints = new SourceFilesystemConstraints(source),
-              configFileConstraints = new ConfigFilesystemConstraints(configFile)) {
+              configFileConstraints = new ConfigFilesystemConstraints(configFile),
+              limitConstraints = new Limits()) {
     this.sourceConstraints = sourceConstraints;
     this.configFileConstraints = configFileConstraints;
     this.options = options;
@@ -33,11 +32,11 @@ class OptionsValidator {
   }
 
   minLambdaMemory() {
-    return limits.LAMBDA.MEMORY.MIN;
+    return this.limitConstraints.lambdaMemoryMin();
   }
 
   maxLambdaMemory() {
-    return limits.LAMBDA.MEMORY.MAX;
+    return this.limitConstraints.lambdaMemoryMax();
   }
 
   validationError() {
